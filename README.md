@@ -1,13 +1,23 @@
-![](https://user-images.githubusercontent.com/7698209/33198075-ef8f2230-d123-11e7-85a3-4cb9b22f877d.png)
-[![](https://jitpack.io/v/CymChad/BaseRecyclerViewAdapterHelper.svg)](https://jitpack.io/#CymChad/BaseRecyclerViewAdapterHelper)![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)[![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BaseRecyclerViewAdapterHelper-green.svg?style=true)](https://android-arsenal.com/details/1/3644)[![CircleCI](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master.svg?style=svg)](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master)[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2302d0084d0048eaa0f9bac4350837a0)](https://www.codacy.com/app/CymChad/BaseRecyclerViewAdapterHelper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CymChad/BaseRecyclerViewAdapterHelper&amp;utm_campaign=Badge_Grade)[![](https://img.shields.io/badge/%E4%BD%9C%E8%80%85-%E9%99%88%E5%AE%87%E6%98%8E-7AD6FD.svg)](https://www.zhihu.com/people/chen-yu-ming-98/activities)  
 # BRVAH
 http://www.recyclerview.org/  
 Powerful and flexible RecyclerAdapter,
 Please feel free to use this. (Welcome to **Star** and **Fork**)  
 
+
+#### 具体更改部分如下：
+1、新增onCreateBaseViewHolder方法回调 子adapter类可以重新此方法，再viewholder创建的时候做一些初始化的操作
+2、新增BaseItemProvider的onCreateItemProvider 子ItemProvider可以重新此方法，再viewholder创建的时候做一些初始化的操作
+3、新增BaseItemProvider的子view的点击事件onChildClick，子view长按事件onChildLongClick
+4、去除BaseQuickAdapter的bindRecycleView方法，使用传统方式setAdapter即可，BaseQuickAdapter内部提供了一个弱引用的recycleview可以拿到recycleivew
+5、新增自动加载更多的开关，setAutoLoadMore(boolean autoLoadMore),默认true自动加载，传递false后不自动加载需要手动点击加载更多
+6、BaseItemProvider可以拿到adapter对象。需要使用的时候可以调用getAdapter()方法
+7、更新loadMoreView一个抽象方法，子类需要重写体用 手动加载的布局
+
+
 kotlin demo :[BRVAH_kotlin](https://github.com/AllenCoder/BRVAH_kotlin)
 
-## [androidX stable version ](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/releases/tag/2.9.45-androidx)
+## [androidX stable version ](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/releases/tag/2.9.49-androidx)
+
 # Document
 - [English](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/wiki)
 - [中文1](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/blob/master/README-cn.md)
@@ -16,9 +26,7 @@ kotlin demo :[BRVAH_kotlin](https://github.com/AllenCoder/BRVAH_kotlin)
 ## [UI](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/issues/694)
 ## Demo
 
-[![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.chad.baserecyclerviewadapterhelper)
 
-[国内下载地址](https://fir.im/s91g)  
 
 # proguard-rules.pro
 > 此资源库自带混淆规则，并且会自动导入，正常情况下无需手动导入。
