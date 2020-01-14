@@ -5,8 +5,8 @@ Please feel free to use this. (Welcome to **Star** and **Fork**)
 
 
 ### 具体更改部分如下：
-#### 1、新增onCreateDefViewHolder方法回调 子adapter类可以重新此方法，再viewholder创建的时候做一些初始化的操作
-#### 2、新增BaseItemProvider的onCreateDefViewHolder 子ItemProvider可以重新此方法，再viewholder创建的时候做一些初始化的操作
+#### 1、新增onViewHolderCreated方法回调 子adapter类可以重新此方法，再viewholder创建的时候做一些初始化的操作
+#### 2、新增BaseItemProvider的onViewHolderCreated 子ItemProvider可以重新此方法，再viewholder创建的时候做一些初始化的操作
 #### 3、新增BaseItemProvider的子view的点击事件onChildClick，子view长按事件onChildLongClick
 #### 4、去除BaseQuickAdapter的bindRecycleView方法，使用传统方式setAdapter即可，BaseQuickAdapter内部提供了一个弱引用的recycleview可以拿到recycleivew
 #### 5、新增自动加载更多的开关，setAutoLoadMore(boolean autoLoadMore),默认true自动加载，传递false后不自动加载需要手动点击加载更多
