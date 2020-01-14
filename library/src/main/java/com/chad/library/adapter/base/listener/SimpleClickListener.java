@@ -1,6 +1,8 @@
 package com.chad.library.adapter.base.listener;
 
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -39,7 +41,7 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
     private View mPressedView = null;
 
     @Override
-    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
         if (recyclerView == null) {
             this.recyclerView = rv;
             this.baseQuickAdapter = (BaseQuickAdapter) recyclerView.getAdapter();
@@ -63,7 +65,7 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
     }
 
     @Override
-    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
         mGestureDetector.onTouchEvent(e);
     }
 

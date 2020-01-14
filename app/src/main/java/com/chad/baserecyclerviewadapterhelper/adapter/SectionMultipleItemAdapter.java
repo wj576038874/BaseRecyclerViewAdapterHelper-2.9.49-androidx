@@ -29,28 +29,28 @@ public class SectionMultipleItemAdapter extends BaseSectionMultiItemQuickAdapter
     }
 
     @Override
-    protected void convertHead(BaseViewHolder helper, final SectionMultipleItem item) {
+    protected void convertHead(@NonNull BaseViewHolder holder, final SectionMultipleItem item) {
         // deal with header viewHolder
-        helper.setText(R.id.header, item.header);
-        helper.setVisible(R.id.more, item.isMore());
-        helper.addOnClickListener(R.id.more);
+        holder.setText(R.id.header, item.header);
+        holder.setVisible(R.id.more, item.isMore());
+        holder.addOnClickListener(R.id.more);
     }
 
     @Override
-    protected void convert(@NonNull BaseViewHolder helper, SectionMultipleItem item) {
+    protected void convert(@NonNull BaseViewHolder holder, SectionMultipleItem item) {
         // deal with multiple type items viewHolder
-        helper.addOnClickListener(R.id.card_view);
-        switch (helper.getItemViewType()) {
+        holder.addOnClickListener(R.id.card_view);
+        switch (holder.getItemViewType()) {
             case MultipleItem.TEXT:
-                helper.setText(R.id.tv, item.getVideo().getName());
+                holder.setText(R.id.tv, item.getVideo().getName());
                 break;
             case MultipleItem.IMG_TEXT:
-                switch (helper.getLayoutPosition() % 2) {
+                switch (holder.getLayoutPosition() % 2) {
                     case 0:
-                        helper.setImageResource(R.id.iv, R.mipmap.animation_img1);
+                        holder.setImageResource(R.id.iv, R.mipmap.animation_img1);
                         break;
                     case 1:
-                        helper.setImageResource(R.id.iv, R.mipmap.animation_img2);
+                        holder.setImageResource(R.id.iv, R.mipmap.animation_img2);
                         break;
                     default:
                         break;

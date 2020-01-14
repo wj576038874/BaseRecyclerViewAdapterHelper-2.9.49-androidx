@@ -3,6 +3,7 @@ package com.chad.baserecyclerviewadapterhelper.adapter;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,11 @@ import com.chad.library.adapter.base.BaseViewHolder;
 public class AnimationAdapter extends BaseQuickAdapter<Status, BaseViewHolder> {
     public AnimationAdapter() {
         super(R.layout.layout_animation, DataServer.getSampleData(100));
+    }
+
+    @Override
+    protected void onViewHolderCreated(@NonNull BaseViewHolder baseViewHolder, @NonNull ViewGroup parent, int viewType) {
+        super.onViewHolderCreated(baseViewHolder, parent, viewType);
     }
 
     @Override

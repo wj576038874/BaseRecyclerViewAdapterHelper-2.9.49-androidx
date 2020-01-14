@@ -68,29 +68,28 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
 
 
     @Override
-    protected void onCreateBaseViewHolder(@NonNull V helper, @NonNull ViewGroup parent, int viewType) {
+    protected void onViewHolderCreated(@NonNull V holder, @NonNull ViewGroup parent, int viewType) {
         BaseItemProvider provider = mItemProviders.get(viewType);
-        provider.onCreateItemProvider(helper, parent, viewType);
-//        Log.e("asd", viewType + "");
+        provider.onViewHolderCreated(holder, parent, viewType);
     }
 
     @Override
-    protected void convert(@NonNull V helper, T item) {
-        int itemViewType = helper.getItemViewType();
+    protected void convert(@NonNull V holder, T item) {
+        int itemViewType = holder.getItemViewType();
         BaseItemProvider provider = mItemProviders.get(itemViewType);
 
-        provider.mContext = helper.itemView.getContext();
+        provider.mContext = holder.itemView.getContext();
 
-        int position = helper.getLayoutPosition() - getHeaderLayoutCount();
+        int position = holder.getLayoutPosition() - getHeaderLayoutCount();
         //执行子类的convert方法
-        provider.convert(helper, item, position);
+        provider.convert(holder, item, position);
         //绑定item的点击事件
-        bindClick(helper, item, position, provider);
+        bindClick(holder, item, position, provider);
         //绑定item的子view点击事件
-        bindChildClick(helper, item, position, provider);
+        bindChildClick(holder, item, position, provider);
     }
 
-    private void bindClick(final V helper, final T item, final int position, final BaseItemProvider provider) {
+    private void bindClick(@NonNull final V holder, final T item, final int position, final BaseItemProvider provider) {
         OnItemClickListener clickListener = getOnItemClickListener();
         OnItemLongClickListener longClickListener = getOnItemLongClickListener();
 
@@ -100,7 +99,7 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
             return;
         }
 
-        View itemView = helper.itemView;
+        View itemView = holder.itemView;
 
         if (clickListener == null) {
             //如果没有设置点击监听，则回调给itemProvider
@@ -108,7 +107,7 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    provider.onClick(helper, item, position);
+                    provider.onClick(holder, item, position);
                 }
             });
         }
@@ -119,7 +118,7 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    return provider.onLongClick(helper, item, position);
+                    return provider.onLongClick(holder, item, position);
                 }
             });
         }
@@ -130,12 +129,12 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
      * 绑定子view的点击事件和长按事件  注意这里做了非null判断 如果用户调用了adapter的事件
      * 那么 onItemChildClickListener onItemChildLongClickListener不会为null且执行用户的回调
      *
-     * @param helper   viewHolder
+     * @param holder   viewHolder
      * @param item     data
      * @param position position
      * @param provider itemProvider
      */
-    private void bindChildClick(final V helper, final T item, final int position, final BaseItemProvider provider) {
+    private void bindChildClick(@NonNull final V holder, final T item, final int position, final BaseItemProvider provider) {
         OnItemChildClickListener onItemChildClickListener = getOnItemChildClickListener();
         OnItemChildLongClickListener onItemChildLongClickListener = getOnItemChildLongClickListener();
 
@@ -145,9 +144,9 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
 
         if (onItemChildClickListener == null) {
             //如果没有设置点击监听，则回调给itemProvider
-            HashSet<Integer> ids = helper.getChildClickViewIds();
+            HashSet<Integer> ids = holder.getChildClickViewIds();
             for (Integer viewId : ids) {
-                final View view = helper.getView(viewId);
+                final View view = holder.getView(viewId);
                 if (view != null) {
                     if (!view.isClickable()) {
                         view.setClickable(true);
@@ -155,7 +154,7 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
                     view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            provider.onChildClick(helper, item, position, v);
+                            provider.onChildClick(holder, item, position, v);
                         }
                     });
                 }
@@ -164,9 +163,9 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
 
         if (onItemChildLongClickListener == null) {
             //如果没有设置点击监听，则回调给itemProvider
-            HashSet<Integer> ids = helper.getItemChildLongClickViewIds();
+            HashSet<Integer> ids = holder.getItemChildLongClickViewIds();
             for (Integer viewId : ids) {
-                final View view = helper.getView(viewId);
+                final View view = holder.getView(viewId);
                 if (view != null) {
                     if (!view.isClickable()) {
                         view.setClickable(true);
@@ -174,7 +173,7 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
                     view.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return provider.onChildLongClick(helper, item, position, v);
+                            return provider.onChildLongClick(holder, item, position, v);
                         }
                     });
                 }

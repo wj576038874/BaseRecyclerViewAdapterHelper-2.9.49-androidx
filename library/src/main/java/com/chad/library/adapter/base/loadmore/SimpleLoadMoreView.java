@@ -1,6 +1,8 @@
 package com.chad.library.adapter.base.loadmore;
 
 
+import androidx.annotation.NonNull;
+
 import com.chad.library.R;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -23,7 +25,7 @@ public final class SimpleLoadMoreView extends LoadMoreView {
     }
 
     @Override
-    public void convert(BaseViewHolder holder) {
+    public void convert(@NonNull BaseViewHolder holder) {
         super.convert(holder);
     }
 

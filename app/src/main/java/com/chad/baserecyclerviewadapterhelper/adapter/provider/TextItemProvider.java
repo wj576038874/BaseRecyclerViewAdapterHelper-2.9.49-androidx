@@ -35,24 +35,24 @@ public class TextItemProvider extends BaseItemProvider<NormalMultipleEntity, Bas
 
 
     @Override
-    public void onCreateItemProvider(BaseViewHolder helper, @NonNull ViewGroup parent, int viewType) {
-        super.onCreateItemProvider(helper, parent, viewType);
+    public void onViewHolderCreated(@NonNull BaseViewHolder holder, @NonNull ViewGroup parent, int viewType) {
+        super.onViewHolderCreated(holder, parent, viewType);
         MultipleItemRvAdapter adapter = getAdapter();
     }
 
     @Override
-    public void convert(BaseViewHolder helper, NormalMultipleEntity data, int position) {
-        helper.setText(R.id.tv, data.content);
+    public void convert(@NonNull BaseViewHolder holder, NormalMultipleEntity data, int position) {
+        holder.setText(R.id.tv, data.content);
 
     }
 
     @Override
-    public void onClick(BaseViewHolder helper, NormalMultipleEntity data, int position) {
+    public void onClick(@NonNull BaseViewHolder holder, NormalMultipleEntity data, int position) {
         Toast.makeText(mContext, "click", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public boolean onLongClick(BaseViewHolder helper, NormalMultipleEntity data, int position) {
+    public boolean onLongClick(@NonNull BaseViewHolder holder, NormalMultipleEntity data, int position) {
         Toast.makeText(mContext, "longClick", Toast.LENGTH_SHORT).show();
         return true;
     }

@@ -2,6 +2,7 @@ package com.chad.library.adapter.base.loadmore;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 
 import com.chad.library.R;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -37,7 +38,7 @@ public abstract class LoadMoreView {
      *
      * @param holder BaseViewHolder
      */
-    public void convert(BaseViewHolder holder) {
+    public void convert(@NonNull BaseViewHolder holder) {
         switch (mLoadMoreStatus) {
             case STATUS_LOADING:
                 visibleLoading(holder, true);

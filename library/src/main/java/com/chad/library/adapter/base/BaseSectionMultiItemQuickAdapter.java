@@ -100,7 +100,7 @@ public abstract class BaseSectionMultiItemQuickAdapter<T extends SectionMultiEnt
         }
     }
 
-    protected abstract void convertHead(K helper, T item);
+    protected abstract void convertHead(@NonNull K holder, T item);
 
     @Override
     public void remove(@IntRange(from = 0L) int position) {

@@ -54,47 +54,47 @@ public abstract class BaseItemProvider<T, V extends BaseViewHolder> {
     /**
      * add  初始化viewholder的时候会调用 子类可以重写然后做一些操作
      */
-    public void onCreateItemProvider(V helper, @NonNull ViewGroup parent, int viewType) {
+    public void onViewHolderCreated(@NonNull V holder, @NonNull ViewGroup parent, int viewType) {
 
     }
 
-    public abstract void convert(V helper, T data, int position);
+    public abstract void convert(@NonNull V holder, T data, int position);
 
     //子类若想实现条目点击事件则重写该方法
     //Subclasses override this method if you want to implement an item click event
-    public void onClick(V helper, T data, int position) {
+    public void onClick(@NonNull V holder, T data, int position) {
 
     }
 
 
     //子类若想实现条目长按事件则重写该方法
     //Subclasses override this method if you want to implement an item long press event
-    public boolean onLongClick(V helper, T data, int position) {
+    public boolean onLongClick(@NonNull V holder, T data, int position) {
         return false;
     }
 
     /**
      * add 子类若想实现条目的子view点击事件则重写该方法
      *
-     * @param helper    viewHolder
+     * @param holder    viewHolder
      * @param data      数据
      * @param position  position
      * @param childView 点击的子view
      */
-    public void onChildClick(V helper, T data, int position, View childView) {
+    public void onChildClick(@NonNull V holder, T data, int position, View childView) {
 
     }
 
     /**
      * add  子类若想实现条目的子view长按事件则重写该方法
      *
-     * @param helper    viewHolder
+     * @param holder    viewHolder
      * @param data      数据
      * @param position  position
      * @param childView 长按的子view
      * @return 注意这个方法在适配器中设置了时间之后不会回调，做过过滤
      */
-    public boolean onChildLongClick(V helper, T data, int position, View childView) {
+    public boolean onChildLongClick(@NonNull V holder, T data, int position, View childView) {
         return false;
     }
 }

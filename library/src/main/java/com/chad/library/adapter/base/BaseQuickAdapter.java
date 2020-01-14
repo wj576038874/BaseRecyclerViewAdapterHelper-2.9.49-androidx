@@ -811,7 +811,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 baseViewHolder = onCreateDefViewHolder(parent, viewType);
                 bindViewClickListener(baseViewHolder);
                 //这个方法应该写在这里 过滤掉header和footer
-                onCreateBaseViewHolder(baseViewHolder, parent, viewType);
+                onViewHolderCreated(baseViewHolder, parent, viewType);
         }
         baseViewHolder.setAdapter(this);
         return baseViewHolder;
@@ -821,11 +821,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * 写个方法 子类可以重写名主要作用在于viewHolder初始化的时候可以做一些操作
      *
-     * @param baseViewHolder
+     * @param holder
      * @param parent
      * @param viewType
      */
-    protected void onCreateBaseViewHolder(@NonNull K baseViewHolder, @NonNull ViewGroup parent, int viewType) {
+    protected void onViewHolderCreated(@NonNull K holder, @NonNull ViewGroup parent, int viewType) {
 
     }
 
@@ -1738,10 +1738,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * Implement this method and use the helper to adapt the view to the given item.
      *
-     * @param helper A fully initialized helper.
+     * @param holder A fully initialized helper.
      * @param item   The item that needs to be displayed.
      */
-    protected abstract void convert(@NonNull K helper, T item);
+    protected abstract void convert(@NonNull K holder, T item);
 
     /**
      * Optional implementation this method and use the helper to adapt the view to the given item.
