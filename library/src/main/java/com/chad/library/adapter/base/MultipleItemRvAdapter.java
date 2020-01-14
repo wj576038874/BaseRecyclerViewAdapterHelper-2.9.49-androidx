@@ -70,15 +70,19 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
     @Override
     protected void onViewHolderCreated(@NonNull V holder, @NonNull ViewGroup parent, int viewType) {
         BaseItemProvider provider = mItemProviders.get(viewType);
+        provider.mContext = parent.getContext();
         provider.onViewHolderCreated(holder, parent, viewType);
+    }
+
+    @Override
+    protected V onCreateDefViewHolder(ViewGroup parent, int viewType) {
+        return super.onCreateDefViewHolder(parent, viewType);
     }
 
     @Override
     protected void convert(@NonNull V holder, T item) {
         int itemViewType = holder.getItemViewType();
         BaseItemProvider provider = mItemProviders.get(itemViewType);
-
-        provider.mContext = holder.itemView.getContext();
 
         int position = holder.getLayoutPosition() - getHeaderLayoutCount();
         //执行子类的convert方法
