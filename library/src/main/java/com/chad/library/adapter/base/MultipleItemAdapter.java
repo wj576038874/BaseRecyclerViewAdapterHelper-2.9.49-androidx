@@ -11,34 +11,40 @@ import com.chad.library.adapter.base.util.ProviderDelegate;
 import java.util.List;
 
 /**
- * https://github.com/chaychan
- *
- * @author ChayChan
- * @description: When there are multiple entries, avoid too much business logic in convert(),Put the logic of each item in the corresponding ItemProvider
- * 当有多种条目的时候，避免在convert()中做太多的业务逻辑，把逻辑放在对应的ItemProvider中
- * @date 2018/3/21  9:55
+ * author: wenjie
+ * date: 2020-04-12 15:51
+ * descption:
+ * sample：
+ * class SampleAdapter(param: String) : MultipleItemAdapter<String, BaseViewHolder>() {
  * <p>
- * modify by wenjie 2019-12-10 16:16
+ * init {
+ * //必须调用
+ * addItemProvider(SampleItemProvider(param))
+ * }
+ * <p>
+ * override fun getViewType(item: String): Int {
+ * return 0
+ * }
+ * }
+ * <p>
+ * class SampleItemProvider(param: String) : BaseItemProvider<String, BaseViewHolder>() {
+ * override fun viewType() = 0
+ * <p>
+ * override fun layout() = 0
+ * <p>
+ * override fun convert(helper: BaseViewHolder?, data: String?, position: Int) {
+ * }
+ * }
  */
 @SuppressWarnings("unchecked")
-public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends BaseQuickAdapter<T, V> {
+public abstract class MultipleItemAdapter<T, V extends BaseViewHolder> extends BaseQuickAdapter<T, V> {
 
     private SparseArray<BaseItemProvider> mItemProviders;
     protected ProviderDelegate mProviderDelegate;
 
-    public MultipleItemRvAdapter(@Nullable List<T> data) {
+    public MultipleItemAdapter(@Nullable List<T> data) {
         super(data);
-    }
 
-    public MultipleItemRvAdapter() {
-        this(null);
-    }
-
-    /**
-     * 用于adapter构造函数完成参数的赋值后调用
-     * Called after the assignment of the argument to the adapter constructor
-     */
-    public void finishInitialize() {
         mProviderDelegate = new ProviderDelegate();
 
         setMultiTypeDelegate(new MultiTypeDelegate<T>() {
@@ -48,11 +54,17 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
                 return getViewType(item);
             }
         });
+    }
 
-        registerItemProvider();
+    public MultipleItemAdapter() {
+        this(null);
+    }
 
+    public final void addItemProvider(@NonNull final BaseItemProvider... itemProviders) {
+        for (BaseItemProvider itemProvider : itemProviders) {
+            mProviderDelegate.registerProvider(itemProvider);
+        }
         mItemProviders = mProviderDelegate.getItemProviders();
-
         for (int i = 0; i < mItemProviders.size(); i++) {
             int key = mItemProviders.keyAt(i);
             BaseItemProvider provider = mItemProviders.get(key);
@@ -60,11 +72,6 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
             getMultiTypeDelegate().registerItemType(key, provider.layout());
         }
     }
-
-    protected abstract int getViewType(@NonNull T item);
-
-    public abstract void registerItemProvider();
-
 
     @Override
     protected void onItemClick(@NonNull V holder, @NonNull T item, int position) {
@@ -95,11 +102,6 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
     }
 
     @Override
-    protected V onCreateDefViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return super.onCreateDefViewHolder(parent, viewType);
-    }
-
-    @Override
     protected void onViewHolderCreated(@NonNull V holder, @NonNull ViewGroup parent, int viewType) {
         BaseItemProvider provider = mItemProviders.get(viewType);
         provider.mContext = parent.getContext();
@@ -107,11 +109,14 @@ public abstract class MultipleItemRvAdapter<T, V extends BaseViewHolder> extends
         provider.onViewHolderCreated(holder, parent, viewType);
     }
 
+    protected abstract int getViewType(@NonNull T item);
+
     @Override
     protected void convert(@NonNull V holder, @NonNull T item) {
-        int itemViewType = holder.getItemViewType();
-        BaseItemProvider provider = mItemProviders.get(itemViewType);
         int position = holder.getLayoutPosition() - getHeaderLayoutCount();
+        int itemViewType = holder.getItemViewType();
+//        int itemViewType = getItemViewType(position);
+        BaseItemProvider provider = mItemProviders.get(itemViewType);
         //执行子类的convert方法
         provider.convert(holder, item, position);
     }

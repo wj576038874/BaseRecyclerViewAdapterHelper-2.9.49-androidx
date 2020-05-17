@@ -17,7 +17,6 @@ package com.chad.library.adapter.base;
 
 import android.animation.Animator;
 import android.content.Context;
-
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -30,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +36,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
 import com.chad.library.adapter.base.animation.AlphaInAnimation;
 import com.chad.library.adapter.base.animation.BaseAnimation;
 import com.chad.library.adapter.base.animation.ScaleInAnimation;
@@ -51,7 +48,6 @@ import com.chad.library.adapter.base.entity.IExpandable;
 import com.chad.library.adapter.base.loadmore.LoadMoreView;
 import com.chad.library.adapter.base.loadmore.SimpleLoadMoreView;
 import com.chad.library.adapter.base.util.MultiTypeDelegate;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
@@ -62,6 +58,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -652,12 +649,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      *                 data set.
      * @return The data at the specified position.
      */
-    @Nullable
+    @NonNull
     public T getItem(@IntRange(from = 0) int position) {
-        if (position >= 0 && position < mData.size())
-            return mData.get(position);
-        else
-            return null;
+        return mData.get(position);
     }
 
     /**
@@ -809,9 +803,19 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 break;
             default:
                 baseViewHolder = onCreateDefViewHolder(parent, viewType);
-                bindViewClickListener(baseViewHolder);
+
                 //这个方法应该写在这里 过滤掉header和footer
                 onViewHolderCreated(baseViewHolder, parent, viewType);
+
+                /*
+                 * itemView的点击事件和子view的点击事件 应该放在viewHolder被创建初始化的时候设置，不应放在onBindViewHolder方法中
+                 * onBindViewHolder方法绑定数据时候调用，并且执行频率很高，每执行一次就new 一个事件类 设置一次点击事件会频繁生成很多事件类对象影响性能
+                 */
+                //绑定item的点击长按事件
+                bindItemClickListener(baseViewHolder);
+                //绑定item的子view点击和长按事件
+                bindChildClickListener(baseViewHolder);
+
         }
         baseViewHolder.setAdapter(this);
         return baseViewHolder;
@@ -820,10 +824,18 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * 写个方法 子类可以重写名主要作用在于viewHolder初始化的时候可以做一些操作
+     * <p>
+     * 子view的点击和长按事件需要重写此方法 再次方法中调用
+     * {@link BaseViewHolder#addOnClickListener(int...)}
+     * {@link BaseViewHolder#addOnLongClickListener(int...)} 否则不生效
+     * 把事件绑定放在viewHolder初始化的时候，以免重复创建大量的事件类 new View.OnClickListener(){} 匿名内部类节约资源
+     * <p>
+     * 注意：如果子adapter是MultipleItemRvAdapter或者MultipleItemAdapter那么{@link #bindItemClickListener}设置的点击事件
+     * 会被覆盖{@link MultipleItemRvAdapter#onViewHolderCreated(BaseViewHolder, ViewGroup, int)}
      *
-     * @param holder
-     * @param parent
-     * @param viewType
+     * @param holder   holder
+     * @param parent   parent
+     * @param viewType viewType
      */
     protected void onViewHolderCreated(@NonNull K holder, @NonNull ViewGroup parent, int viewType) {
 
@@ -1042,37 +1054,147 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
     }
 
+    /**
+     * adapter类可以重写此方法，不过此方法优先级低于 adapter.setOnItemClickListener
+     * 如果设置了adapter.setOnItemClickListener 此方法不会回调
+     *
+     * @param position position
+     */
+    protected void onItemClick(@NonNull K holder, @NonNull T item, int position) {
 
-    private void bindViewClickListener(final BaseViewHolder baseViewHolder) {
+    }
+
+    /**
+     * adapter可以重写此方法，不过此方法优先级低于 adapter.setOnItemLongClickListener
+     * 如果设置了adapter.setOnItemLongClickListener 此方法不会回调
+     *
+     * @param position position
+     */
+    protected boolean onItemLongClick(@NonNull K holder, @NonNull T item, int position) {
+        return false;
+    }
+
+
+    /**
+     * 绑定itemView的点击事件和长按事件
+     *
+     * @param baseViewHolder
+     */
+    private void bindItemClickListener(final K baseViewHolder) {
         if (baseViewHolder == null) {
             return;
         }
         final View view = baseViewHolder.itemView;
-        if (getOnItemClickListener() != null) {
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = baseViewHolder.getAdapterPosition();
-                    if (position == RecyclerView.NO_POSITION) {
-                        return;
-                    }
-                    position -= getHeaderLayoutCount();
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = baseViewHolder.getAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
+                }
+                position -= getHeaderLayoutCount();
+                if (getOnItemClickListener() != null) {
                     setOnItemClick(v, position);
+                } else {
+                    onItemClick(baseViewHolder, getItem(position), position);
                 }
-            });
-        }
-        if (getOnItemLongClickListener() != null) {
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int position = baseViewHolder.getAdapterPosition();
-                    if (position == RecyclerView.NO_POSITION) {
-                        return false;
-                    }
-                    position -= getHeaderLayoutCount();
+            }
+        });
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int position = baseViewHolder.getAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) {
+                    return false;
+                }
+                position -= getHeaderLayoutCount();
+                if (getOnItemLongClickListener() != null) {
                     return setOnItemLongClick(v, position);
+                } else {
+                    return onItemLongClick(baseViewHolder, getItem(position), position);
                 }
-            });
+            }
+        });
+    }
+
+
+    /**
+     * adapter可以重写此方法，不过此方法优先级低于 adapter.setOnItemChildClickListener
+     * 如果设置了adapter.setOnItemChildClickListener 此方法不会回调
+     *
+     * @param view     itemView
+     * @param position position
+     */
+    protected void onChildClick(@NonNull K holder, @NonNull T item, int position, @NonNull View view) {
+    }
+
+    /**
+     * adapter可以重写此方法，不过此方法优先级低于 adapter.setOnItemChildLongClickListener
+     * 如果设置了adapter.setOnItemChildLongClickListener 此方法不会回调
+     *
+     * @param view     itemView
+     * @param position position
+     */
+    protected boolean onChildLongClick(@NonNull K holder, @NonNull T item, int position, @NonNull View view) {
+        return false;
+    }
+
+    /**
+     * 子view的事件绑定
+     *
+     * @param baseViewHolder holder
+     */
+    private void bindChildClickListener(final K baseViewHolder) {
+
+        HashSet<Integer> childClickViewIds = baseViewHolder.getChildClickViewIds();
+        for (Integer viewId : childClickViewIds) {
+            final View view = baseViewHolder.getView(viewId);
+            if (view != null) {
+                if (!view.isClickable()) {
+                    view.setClickable(true);
+                }
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = baseViewHolder.getAdapterPosition();
+                        if (position == RecyclerView.NO_POSITION) {
+                            return;
+                        }
+                        position -= getHeaderLayoutCount();
+                        if (getOnItemChildClickListener() != null) {
+                            getOnItemChildClickListener().onItemChildClick(BaseQuickAdapter.this, v, position);
+                        } else {
+                            onChildClick(baseViewHolder, getItem(position), position, v);
+                        }
+                    }
+                });
+            }
+        }
+
+        HashSet<Integer> childLongClickViewIds = baseViewHolder.getItemChildLongClickViewIds();
+        for (Integer viewId : childLongClickViewIds) {
+            final View view = baseViewHolder.getView(viewId);
+            if (view != null) {
+                if (!view.isLongClickable()) {
+                    view.setLongClickable(true);
+                }
+                view.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int position = baseViewHolder.getAdapterPosition();
+                        if (position == RecyclerView.NO_POSITION) {
+                            return false;
+                        }
+                        position -= getHeaderLayoutCount();
+                        if (getOnItemChildLongClickListener() != null) {
+                            return getOnItemChildLongClickListener().onItemChildLongClick(BaseQuickAdapter.this, v, position);
+                        } else {
+                            return onChildLongClick(baseViewHolder, getItem(position), position, v);
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -1097,6 +1219,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return getOnItemLongClickListener().onItemLongClick(BaseQuickAdapter.this, v, position);
     }
 
+
     private MultiTypeDelegate<T> mMultiTypeDelegate;
 
     public void setMultiTypeDelegate(MultiTypeDelegate<T> multiTypeDelegate) {
@@ -1107,7 +1230,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return mMultiTypeDelegate;
     }
 
-    protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
+    protected K onCreateDefViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layoutId = mLayoutResId;
         if (mMultiTypeDelegate != null) {
             layoutId = mMultiTypeDelegate.getLayoutId(viewType);
@@ -1115,7 +1238,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return createBaseViewHolder(parent, layoutId);
     }
 
-    protected K createBaseViewHolder(ViewGroup parent, int layoutResId) {
+    protected K createBaseViewHolder(@NonNull ViewGroup parent, int layoutResId) {
         return createBaseViewHolder(getItemView(layoutResId, parent));
     }
 
@@ -1741,7 +1864,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param holder A fully initialized helper.
      * @param item   The item that needs to be displayed.
      */
-    protected abstract void convert(@NonNull K holder, T item);
+    protected abstract void convert(@NonNull K holder, @NonNull T item);
 
     /**
      * Optional implementation this method and use the helper to adapt the view to the given item.

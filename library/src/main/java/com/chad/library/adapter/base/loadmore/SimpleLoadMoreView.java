@@ -8,7 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 /**
  * Created by BlingBling on 2016/10/11.
- *
+ * <p>
  * modify by wenjie 2020-01-13 16:16
  */
 
@@ -41,6 +41,7 @@ public final class SimpleLoadMoreView extends LoadMoreView {
 
     /**
      * add getLoadCompleteId方法
+     *
      * @return 子类需要重写
      */
     @Override

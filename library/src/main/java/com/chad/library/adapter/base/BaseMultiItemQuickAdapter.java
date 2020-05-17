@@ -2,6 +2,8 @@ package com.chad.library.adapter.base;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 
@@ -47,7 +49,7 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     }
 
     @Override
-    protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
+    protected K onCreateDefViewHolder(@NonNull ViewGroup parent, int viewType) {
         return createBaseViewHolder(parent, getLayoutId(viewType));
     }
 

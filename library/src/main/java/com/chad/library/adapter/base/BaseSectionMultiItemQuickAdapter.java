@@ -57,7 +57,7 @@ public abstract class BaseSectionMultiItemQuickAdapter<T extends SectionMultiEnt
     }
 
     @Override
-    protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
+    protected K onCreateDefViewHolder(@NonNull ViewGroup parent, int viewType) {
         // add this to check viewType of section
         if (viewType == SECTION_HEADER_VIEW)
             return createBaseViewHolder(getItemView(mSectionHeadResId, parent));
@@ -100,7 +100,7 @@ public abstract class BaseSectionMultiItemQuickAdapter<T extends SectionMultiEnt
         }
     }
 
-    protected abstract void convertHead(@NonNull K holder, T item);
+    protected abstract void convertHead(K helper, T item);
 
     @Override
     public void remove(@IntRange(from = 0L) int position) {

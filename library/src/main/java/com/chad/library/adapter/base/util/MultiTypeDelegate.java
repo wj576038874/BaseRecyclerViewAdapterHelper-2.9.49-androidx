@@ -1,6 +1,8 @@
 package com.chad.library.adapter.base.util;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+
 import android.util.SparseIntArray;
 
 import java.util.List;
@@ -39,10 +41,10 @@ public abstract class MultiTypeDelegate<T> {
     /**
      * get the item type from specific entity.
      *
-     * @param t entity
+     * @param item entity
      * @return item type
      */
-    protected abstract int getItemType(T t);
+    protected abstract int getItemType(@NonNull T item);
 
     public final int getLayoutId(int viewType) {
         return this.layouts.get(viewType, TYPE_NOT_FOUND);
