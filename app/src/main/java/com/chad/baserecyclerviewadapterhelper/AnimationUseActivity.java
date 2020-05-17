@@ -26,6 +26,7 @@ import com.kyleduo.switchbutton.SwitchButton;
 public class AnimationUseActivity extends Activity {
     private RecyclerView mRecyclerView;
     private AnimationAdapter mAnimationAdapter;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
