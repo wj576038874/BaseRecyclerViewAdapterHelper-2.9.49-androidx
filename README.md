@@ -12,6 +12,7 @@ Please feel free to use this. (Welcome to **Star** and **Fork**)
 #### 5、新增自动加载更多的开关，setAutoLoadMore(boolean autoLoadMore),默认true自动加载，传递false后不自动加载需要手动点击加载更多
 #### 6、BaseItemProvider可以拿到adapter对象。需要使用的时候可以调用getAdapter()方法
 #### 7、更新loadMoreView一个抽象方法，子类需要重写体用 手动加载的布局
+#### 8、适配器中新增点击和长按事件的处理，为了处理以后viewholder公用的问题
 
 
 kotlin demo :[BRVAH_kotlin](https://github.com/AllenCoder/BRVAH_kotlin)
